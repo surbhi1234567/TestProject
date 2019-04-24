@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -21,15 +22,15 @@ public class BusSearch {
 	@Given("^Open the chrome$")
 	public void open_the_chrome() throws Throwable {
 
-		System.setProperty("webdriver.chrome.driver", "C:\\Users\\dell\\Desktop\\New folder\\chromedriver.exe");
-		WebDriver driver = new ChromeDriver();
+		System.setProperty("webdriver.chrome.driver", "C:\\Users\\sugupta\\driver\\chromedriver.exe");
+		driver = new ChromeDriver();
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 	}
 
 	@Given("^Launch the application$")
 	public void launch_the_application() throws Throwable {
-		driver.get("https://www.redbus.in/");
-		Thread.sleep(5000);
+		driver.get("https://www.redbus.in");
+		Thread.sleep(1000);
 		driver.manage().window().maximize();
 	}
 
@@ -37,9 +38,10 @@ public class BusSearch {
 	public void search_for_Bus_Tickets_from_Mumbai_to_Nasik() throws Throwable {
 
 		driver.findElement(By.id("src")).sendKeys("Mumbai");
-		Thread.sleep(2000);
+		Thread.sleep(1000);
 
 		driver.findElement(By.id("src")).sendKeys(Keys.ENTER);
+		Thread.sleep(1000);
 		driver.findElement(By.id("dest")).sendKeys("Nasik");
 		Thread.sleep(2000);
 
@@ -49,114 +51,110 @@ public class BusSearch {
 
 	@When("^Select the journey date as date \"([^\"]*)\" , month \"([^\"]*)\" and year \"([^\"]*)\"$")
 	public void select_the_journey_date_as_date_month_and_year(String arg1, int arg2, int arg3) throws Throwable {
-		List<String> monthList = Arrays.asList("Jan", "Feb", "Mar", "Apr", "May", "Jun", "July", "Aug", "Sept", "Oct",
-				"Nov", "Dec");
+		
+		
+		((JavascriptExecutor)driver).executeScript ("document.getElementById('onward_cal').removeAttribute('readonly',0);"); // Enables the from date box
 
-		String expDate = null;
+		WebElement fromDateBox= driver.findElement(By.id("onward_cal"));
+		fromDateBox.clear();
+		fromDateBox.sendKeys("07-Jun-2019"); 
+		//fromDateBox.sendKeys(Keys.ENTER);
+		
+		
+		((JavascriptExecutor)driver).executeScript ("document.getElementById('return_cal').removeAttribute('readonly',0);"); // Enables the to date box
 
-		int expMonth;
-
-		int expYear;
-
-		String calDate = null;
-
-		boolean dateNotFound;
-
-		WebElement calendar = driver.findElement(By.xpath(".//input[@id='onward_cal']"));
-
-		calendar.click();
-
-		expDate = arg1;
-
-		expMonth = arg2;
-
-		expYear = arg3;
-
-		dateNotFound = true;
-
-		while (dateNotFound) {
-
-			WebElement monthYearEle = driver
-					.findElement(By.xpath(".//*[@id='rb-calendar_onward_cal']//table//td[@class='monthTitle']"));
-
-			String monthYear = monthYearEle.getAttribute("innerHTML");
-
-			String[] s = monthYear.split(" ");
-
-			String calMonth = s[0];
-
-			int calYear = Integer.parseInt(s[1]);
-
-			if (monthList.indexOf(calMonth) + 1 == expMonth && expYear == calYear) {
-
-				WebElement datePicker = driver.findElement(By.xpath(".//*[@id='rb-calendar_onward_cal']"));
-
-				List<WebElement> dates = datePicker.findElements(By.tagName("td"));
-
-				for (WebElement temp : dates) {
-
-					if (temp.getText().equals(expDate)) {
-
-						temp.click();
-
-						break;
-
-					}
-
-				}
-
-				dateNotFound = false;
-
-			}
-
-			else if (monthList.indexOf(calMonth) + 1 < expMonth && expYear == calYear || expYear > calYear) {
-
-				calendar.findElement(By.xpath(".//*[@id='rb-calendar_onward_cal']//button[.='>']")).click();
-
-			}
-
-			else if (monthList.indexOf(calMonth) + 1 > expMonth && expYear == calYear || expYear < calYear) {
-
-				calendar.findElement(By.xpath(".//*[@id='rb-calendar_onward_cal']//button[.='<']")).click();
-
-			}
-
-		}
-
+		WebElement toDateBox= driver.findElement(By.id("return_cal"));
+		toDateBox.clear();
+		toDateBox.sendKeys("14-Jun-2019"); 
+		//toDateBox.sendKeys(Keys.ENTER);
+		
+		
 	}
+	
 	@When("^Click on Search Buses button$")
 	public void click_on_Search_Buses_button() throws Throwable {
 		
 		driver.findElement(By.xpath(".//*[@id='search_btn']")).click();
-		Thread.sleep(2000);
+		Thread.sleep(5000);
 	}
 
 	@When("^Select Departure time as After (\\d+) PM$")
 	public void select_Departure_time_as_After_PM(int arg1) throws Throwable {
 		
-		driver.findElement(By.id("dtAfter 6 pm")).click();
-		Thread.sleep(2000);
+		String s="After 6 pm";
+		
+		driver.findElement(By.xpath("//ul[contains(@class,'dt-time-filter')]/li/label[@title='"+s+"']")).click();
+		
 	}
 
 	@When("^Select Bus Type as Non AC$")
 	public void select_Bus_Type_as_Non_AC() throws Throwable {
 		
-		driver.findElement(By.id("bt_NONAC")).click();
-		Thread.sleep(2000);
+		String s="bt_NONAC";
+		driver.findElement(By.xpath("//ul[@class='list-chkbox']/li/label[@for='"+s+"']")).click();
+		
 	}
 
 	@When("^Select the (\\d+) Available Seats$")
 	public void select_the_Available_Seats(int arg1) throws Throwable {
 		
-		List<WebElement> busList=driver.findElements(By.cssSelector("div[class='button view-seats fr']"));
-		int busCount=driver.findElements(By.cssSelector("div[class='button view-seats fr']")).size();
-		driver.findElements(By.cssSelector("div[class='button view-seats fr']")).get(1).click();
-		Thread.sleep(2000);
-		driver.findElement(By.cssSelector("canvas[data-type='lower']")).click();
-		Thread.sleep(1000);
-		driver.findElement(By.cssSelector("canvas[data-type='lower']")).click();
-		Thread.sleep(1000);
+		List<WebElement> busList=driver.findElements(By.xpath("//ul[@class='bus-items']/div"));
+		int size=busList.size();
+		System.out.println(size);
+		int x=1;
+		for(WebElement bt : busList)
+		{
+		
+			String myString=driver.findElement(By.xpath("//ul[@class='bus-items']/div["+x+"]/li/div/div/div/div[7]/div[2]")).getText();
+			//String myString=bt.findElement(By.xpath("//li/div/div/div/div[7]/div[2]")).getText();
+			System.out.println("loop inside");
+		System.out.println(myString);
+			String split[]=myString.split(" ");
+			System.out.println(split[0]);
+		
+			int i = Integer.parseInt(split[0]);
+			String id1=driver.findElement(By.xpath("//ul[@class='bus-items']/div["+x+"]/li")).getAttribute("id");
+			System.out.println(id1);
+	
+			if(i>40)
+			{
+				System.out.println(x);
+				System.out.println(id1);
 				
+				WebElement element = driver.findElement(By.xpath("//ul[@class='bus-items']/div["+x+"]/li/div/div[2]/div[contains(@class,'view-seats') and text()='View Seats']"));
+				JavascriptExecutor executor = (JavascriptExecutor)driver;
+				executor.executeScript("arguments[0].click();", element);
+				Thread.sleep(2000);
+				System.out.println("view seats");
+				
+				break;
+				
+			}
+			x++;
+		}
+		
+		WebElement e=driver.findElement(By.xpath("//canvas[@data-type='lower' and @class='pointer']"));
+		
+	//	WebElement element = driver.findElement(By.xpath("//ul[@class='bus-items']/div["+x+"]/li/div[2]/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/canvas[@data-type='lower' and @class='pointer']"));
+		JavascriptExecutor executor = (JavascriptExecutor)driver;
+		executor.executeScript("arguments[0].click();", e);
+		Thread.sleep(10000);
+
+
+	/*	for(int j=1;j<3;j++)
+		{
+			
+			if (driver.findElement(By.xpath("//ul[@class='bus-items']/div["+x+"]/li/div[2]/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/canvas")).getAttribute("class").contains("pointer"))
+			{
+				driver.findElement(By.xpath("//ul[@class='bus-items']/div["+x+"]/li/div[2]/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/canvas")).click();
+			}
+			System.out.println(x);
+			WebElement e=driver.findElement(By.xpath("//ul[@class='bus-items']/div["+x+"]/li/div[2]/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/canvas[@data-type='lower' and @class='pointer']"));
+			JavascriptExecutor executor = (JavascriptExecutor)driver;
+			executor.executeScript("arguments[0].click();", e);
+			Thread.sleep(10000);
+			
+		}*/
 		 
 	}
 
@@ -171,6 +169,7 @@ public class BusSearch {
 				driver.findElement(By.xpath("//ul[@data-value=\"bp\"]//li["+i+"]//div[1]")).click();
 				break;
 			}
+			
 			
 		}
 		
@@ -191,28 +190,19 @@ public class BusSearch {
 	@When("^Click on Proceed to Book$")
 	public void click_on_Proceed_to_Book() throws Throwable {
 		
-		driver.findElement(By.xpath("//*[@id=\"10628569\"]/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div/div[2]/button")).click();
-		Thread.sleep(500);
-		driver.findElement(By.xpath("//*[@id=\"10628569\"]/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div/div[1]/div[2]/div[6]/button")).click();
-		Thread.sleep(1000);
+		
 	}
 
 	@When("^On Passenger Details, Select I don't want insurance$")
 	public void on_Passenger_Details_Select_I_don_t_want_insurance() throws Throwable {
 		
-		driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[4]/div[2]/div/div[5]/div/div[2]/div/label[2]/span")).click();
+
 	}
 
 	@Then("^Verify whether the Total Amount Displayed on Passenger Details is the same as displayed on Select the Boarding and Dropping Point$")
 	public void verify_whether_the_Total_Amount_Displayed_on_Passenger_Details_is_the_same_as_displayed_on_Select_the_Boarding_and_Dropping_Point()
 			throws Throwable {
-		String amount=driver.findElement(By.xpath("//*[@id=\"10628569\"]/div[2]/div[2]/div[2]/div[2]/div/div[2]/div/div/div[2]/div[2]/span[3]/span[2]")).getText();
-		String amountFinal=driver.findElement(By.xpath("//*[@id=\"root\"]/div/div[4]/div[3]/div/div[1]/div[2]/span")).getText();
-		
-		if(amount.equals(amountFinal))
-		{
-			System.out.println("Validated:- Amount same ");
-		}
+	
 	
 	}
 	

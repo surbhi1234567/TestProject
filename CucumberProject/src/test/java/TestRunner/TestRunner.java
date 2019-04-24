@@ -10,7 +10,7 @@ import cucumber.api.junit.Cucumber;
 
 @CucumberOptions(
 		features= "src/main/java/Feature",
-		glue="src/test/java/StepDefinition/BusSearch",
+		glue="StepDefinition",
 		monochrome=true
 )
 
