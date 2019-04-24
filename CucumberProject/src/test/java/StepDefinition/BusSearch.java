@@ -13,7 +13,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Action;
 import org.openqa.selenium.interactions.Actions;
-
+import org.assertj.core.api.SoftAssertions;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -226,8 +226,9 @@ public class BusSearch {
 		
 		String s=driver.findElement(By.xpath("//div[contains(@class,'booking-amt')]//span")).getText();
 		int s1=Integer.parseInt(s);
+		SoftAssertions sa = new SoftAssertions();
+		sa.assertThat(amount1).equals(s1);
 		
-		Assert.assertEquals(amount, s1);
 	
 	}
 	
