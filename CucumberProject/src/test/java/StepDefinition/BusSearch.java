@@ -4,16 +4,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Action;
+import org.openqa.selenium.interactions.Actions;
+
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import cucumber.runtime.junit.Assertions;
+
 
 public class BusSearch {
 
@@ -29,15 +35,18 @@ public class BusSearch {
 
 	@Given("^Launch the application$")
 	public void launch_the_application() throws Throwable {
+		
+		driver.manage().window().maximize();
 		driver.get("https://www.redbus.in");
 		Thread.sleep(1000);
-		driver.manage().window().maximize();
+		
 	}
 
 	@When("^Search for Bus Tickets from Mumbai to Nasik$")
 	public void search_for_Bus_Tickets_from_Mumbai_to_Nasik() throws Throwable {
 
 		driver.findElement(By.id("src")).sendKeys("Mumbai");
+		driver.findElement(By.xpath("//ul[@class='autoFill']//li[4]")).click();
 		Thread.sleep(1000);
 
 		driver.findElement(By.id("src")).sendKeys(Keys.ENTER);
@@ -108,7 +117,7 @@ public class BusSearch {
 			String myString=driver.findElement(By.xpath("//ul[@class='bus-items']/div["+x+"]/li/div/div/div/div[7]/div[2]")).getText();
 			//String myString=bt.findElement(By.xpath("//li/div/div/div/div[7]/div[2]")).getText();
 			System.out.println("loop inside");
-		System.out.println(myString);
+			System.out.println(myString);
 			String split[]=myString.split(" ");
 			System.out.println(split[0]);
 		
@@ -133,79 +142,98 @@ public class BusSearch {
 			x++;
 		}
 		
-		WebElement e=driver.findElement(By.xpath("//canvas[@data-type='lower' and @class='pointer']"));
-		
-	//	WebElement element = driver.findElement(By.xpath("//ul[@class='bus-items']/div["+x+"]/li/div[2]/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/canvas[@data-type='lower' and @class='pointer']"));
-		JavascriptExecutor executor = (JavascriptExecutor)driver;
-		executor.executeScript("arguments[0].click();", e);
-		Thread.sleep(10000);
-
-
-	/*	for(int j=1;j<3;j++)
-		{
-			
-			if (driver.findElement(By.xpath("//ul[@class='bus-items']/div["+x+"]/li/div[2]/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/canvas")).getAttribute("class").contains("pointer"))
-			{
-				driver.findElement(By.xpath("//ul[@class='bus-items']/div["+x+"]/li/div[2]/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/canvas")).click();
-			}
-			System.out.println(x);
-			WebElement e=driver.findElement(By.xpath("//ul[@class='bus-items']/div["+x+"]/li/div[2]/div[2]/div[1]/div/div/div/div[2]/div[2]/div[2]/canvas[@data-type='lower' and @class='pointer']"));
-			JavascriptExecutor executor = (JavascriptExecutor)driver;
-			executor.executeScript("arguments[0].click();", e);
-			Thread.sleep(10000);
-			
-		}*/
-		 
+		 Thread.sleep(10000);
 	}
 
 	@When("^Select the Boarding and Dropping Point$")
 	public void select_the_Boarding_and_Dropping_Point() throws Throwable {
 		List <WebElement> boardingPoint=driver.findElements(By.xpath("//ul[@data-value=\"bp\"]//li"));
 		int bp=driver.findElements(By.xpath("//ul[@data-value=\"bp\"]//li")).size();
+		System.out.println(bp);
 		
-		for(int i=0;i<bp;i++)
+		for(int i=1;i<bp;i++)
 		{
-			if(driver.findElement(By.xpath("//ul[@data-value=\"bp\"]//li["+i+"]//div[3]//span")).getText().equals("Borivali-(w) Neeta Travels,  Opp. Gokul Hotel")) {
-				driver.findElement(By.xpath("//ul[@data-value=\"bp\"]//li["+i+"]//div[1]")).click();
+			String boardingPoint1=driver.findElement(By.xpath("//ul[@data-value=\"bp\"]//li["+i+"]//div[3]//span")).getText();
+			System.out.println(boardingPoint1);
+			
+			if(driver.findElement(By.xpath("//ul[@data-value=\"bp\"]//li["+i+"]//div[3]//span")).getText().contains("Chembur-(E) Yogi Restaurant")) {
+				
+				System.out.println("inside loop");
+				WebElement element=driver.findElement(By.xpath("//ul[@data-value=\"bp\"]//li["+i+"]//div[1]"));
+				JavascriptExecutor executor = (JavascriptExecutor)driver;
+				executor.executeScript("arguments[0].click();", element);
+				Thread.sleep(2000);
 				break;
 			}
 			
 			
 		}
-		
+		Thread.sleep(1000);
 		List <WebElement> droppingPoint=driver.findElements(By.xpath("//ul[@data-value=\"dp\"]//li"));
 		int dp=driver.findElements(By.xpath("//ul[@data-value=\"dp\"]//li")).size();
 		
-		for(int i=0;i<bp;i++)
+		for(int i=1;i<dp;i++)
 		{
-			if(driver.findElement(By.xpath("//ul[@data-value=\"dp\"]//li["+i+"]//div[3]//span")).getText().equals("Saroj Travels- Mumbai Naka, Mylan Circle")) {
-				driver.findElement(By.xpath("//ul[@data-value=\"dp\"]//li["+i+"]//div[1]")).click();
+			if(driver.findElement(By.xpath("//ul[@data-value=\"dp\"]//li["+i+"]//div[3]//span")).getText().equals("Nashik")) {
+				
+				WebElement element=driver.findElement(By.xpath("//ul[@data-value=\"dp\"]//li["+i+"]//div[1]"));
+				element.click();
+				/*JavascriptExecutor executor = (JavascriptExecutor)driver;
+				executor.executeScript("arguments[0].click();", element);
+				Thread.sleep(2000);*/
 				break;
+				
 			}
 			
 		}
-		
+		Thread.sleep(1000);
 	}
-
+	
+	public String amount;
+	public int amount1;
+	
 	@When("^Click on Proceed to Book$")
 	public void click_on_Proceed_to_Book() throws Throwable {
 		
-		
+		 
+		driver.findElement(By.xpath("//button[text()='continue']")).click();
+		Thread.sleep(1000);
+		 amount=driver.findElement(By.xpath("//div[@class='fare-summary-container']//span[2]//span[2]")).getText();
+		amount1=Integer.parseInt(amount);
+		 System.out.println(amount1);
+		driver.findElement(By.xpath("//button[text()='Proceed to book']")).click();
+		Thread.sleep(5000);
+		driver.findElement(By.xpath("//*[@id=\"seatno-04\"]")).sendKeys("surbhi");
 	}
 
 	@When("^On Passenger Details, Select I don't want insurance$")
 	public void on_Passenger_Details_Select_I_don_t_want_insurance() throws Throwable {
 		
-
+		//WebElement Element=driver.findElement(By.xpath("//input[@id='insuranceNotOpted']//span"));
+		//driver.findElement(By.xpath("//div[@id='mBWrapper']//div[1]//div[1]//div[@data-view=\"custinfoView\"]"));
+	
+		JavascriptExecutor js = (JavascriptExecutor)driver;
+		//js.executeScript("arguments[0].scrollIntoView();",Element );
+		js.executeScript("window.scrollBy(0,1000)");
+		//*[@id="RUCFeatureCheckBox"]
+		driver.findElement(By.xpath("//input[@id='insuranceNotOpted']//span")).click();
 	}
 
 	@Then("^Verify whether the Total Amount Displayed on Passenger Details is the same as displayed on Select the Boarding and Dropping Point$")
 	public void verify_whether_the_Total_Amount_Displayed_on_Passenger_Details_is_the_same_as_displayed_on_Select_the_Boarding_and_Dropping_Point()
 			throws Throwable {
 	
+		
+		String s=driver.findElement(By.xpath("//div[contains(@class,'booking-amt')]//span")).getText();
+		int s1=Integer.parseInt(s);
+		
+		Assert.assertEquals(amount, s1);
 	
 	}
 	
+	
+	
+	/*
 	@When("^Click on Hotels button$")
 	public void click_on_Hotels_button() throws Throwable {
 		
@@ -251,5 +279,5 @@ public class BusSearch {
 	public void verify_whether_the_results_are_getting_displayed_for_Andheri_Mumbai_Location() throws Throwable {
 	  
 	}
-
+*/
 }
