@@ -28,7 +28,7 @@ public class BusSearch {
 	@Given("^Open the chrome$")
 	public void open_the_chrome() throws Throwable {
 
-		System.setProperty("webdriver.chrome.driver", "C:\\Users\\sugupta\\driver\\chromedriver.exe");
+		System.setProperty("webdriver.chrome.driver", "C:\\Users\\surbhi.gupta\\Downloads\\chromedriver_win32\\chromedriver.exe");
 		driver = new ChromeDriver();
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 	}
